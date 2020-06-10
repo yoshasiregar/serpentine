@@ -13,7 +13,7 @@ Functionalities:
 
 - Reverse shell (Using `netcat` as a client, listen on a port `nc -l -p 5555` and request a reverse shell connection to that port)
 
-- Reverse proxy (Using [`revp`](https://github.com/jafarlihi/revp), upload `revp` to the client and execute it with reverse shell)
+- Reverse proxy (Using [`revp`](https://github.com/jafarlihi/revp), upload `revp` to the client and execute it with a reverse shell)
 
 ### Dissection
 `client` directory holds the Windows portion of the RAT made with C++ and Boost.
