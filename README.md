@@ -9,7 +9,7 @@ Functionalities:
 
 - Put files
 
-- Keylogger (Just get %APPDATA%/svchost/log file)
+- Keylogger (Just get `%APPDATA%/svchost/log` file)
 
 - Reverse shell (Using `netcat` as a client, listen on a port `nc -l -p 5555` and request a reverse shell connection to that port)
 
