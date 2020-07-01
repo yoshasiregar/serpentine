@@ -1,5 +1,5 @@
 # serpentine
-serpentine is a Windows RAT (Remote Administration Tool) that lets your interact with the clients using a multiplatform RESTful server.
+serpentine is a Windows RAT (Remote Administration Tool) that lets you interact with the clients using a multiplatform RESTful server.
 
 Functionalities:
 
